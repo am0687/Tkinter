@@ -141,7 +141,15 @@ def delete():
         return
 
     if messagebox.askyesno("Confirm", "Delete contact?"):
+        # Delete the selected contact
         cur.execute("DELETE FROM contacts WHERE id=?", (selected_id,))
+        
+        # Check if the table is now empty
+        cur.execute("SELECT COUNT(*) FROM contacts")
+        if cur.fetchone()[0] == 0:
+            # Reset the AUTOINCREMENT counter back to 0 (next entry will be 1)
+            cur.execute("DELETE FROM sqlite_sequence WHERE name='contacts'")
+            
         con.commit()
         display()
         clear()
